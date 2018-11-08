@@ -3,21 +3,13 @@ version: '3'
 services:
   python:
     image: python:3.6
-    environment:
-    - DEBUG: 'true
-          - PORT: '8080'
     volumes:
-    - ./:/server/http
+      - ./:./web
     links:
-    - postgres
-    - mongodb
-    - redis
+      - redis
     ports:
-    - "8080:8080"
+      - "8080:8080"
 
   redis:
     image: sickp/alpine-redis:3.2.2
     restart: unless-stopped
-    ports:
-    - "6379:6379"
-
