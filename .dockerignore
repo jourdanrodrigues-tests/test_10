@@ -1,0 +1,8 @@
+Dockerfile
+.dockerignore
+.editorconfig
+.gitignore
+.idea
+setup.cfg
+README.md
+REQUIREMENTS.md
