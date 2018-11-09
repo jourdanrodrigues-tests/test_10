@@ -8,8 +8,9 @@ services:
 
   server:
     build: .
+    command: python server.py
     volumes:
-      - ./:/app/web
+      - ./:/app
     links:
       - redis
     ports:
