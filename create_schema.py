@@ -2,18 +2,8 @@ import re
 
 import psycopg2
 
+from core.db.helpers import get_autocommit_connection, call_close
 from core.environment import DB_DATA
-
-
-def get_db_connection(**kwargs):
-    conn = psycopg2.connect(**kwargs)
-    conn.autocommit = True
-    return conn
-
-
-def close(*args):
-    for arg in args:
-        arg.close()
 
 
 def handle_db_creation_error(exception):
@@ -26,7 +16,7 @@ def handle_db_creation_error(exception):
 
 
 def create_database_if_not_exists():
-    connection = get_db_connection(
+    connection = get_autocommit_connection(
         dbname=DB_DATA['dbname'],
         user=DB_DATA['user'],
         host=DB_DATA['host'],
@@ -38,11 +28,11 @@ def create_database_if_not_exists():
     except psycopg2.ProgrammingError as exc:
         handle_db_creation_error(exc)
     finally:
-        close(cursor, connection)
+        call_close(cursor, connection)
 
 
 def create_recipe_table_if_not_exists():
-    connection = get_db_connection(**DB_DATA)
+    connection = get_autocommit_connection(**DB_DATA)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -55,7 +45,7 @@ def create_recipe_table_if_not_exists():
     );
     """)
 
-    close(cursor, connection)
+    call_close(cursor, connection)
 
 
 if __name__ == '__main__':
