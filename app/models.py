@@ -62,7 +62,7 @@ class Model:
 
     def create(self):
         keys, values = self._get_keys_values()
-        query_string = 'insert into {} ({}) values ({});'.format(
+        query_string = 'insert into {} ({}) values ({}) returning id;'.format(
             self.get_table_name(),
             ', '.join(keys),
             ', '.join(['%s' for _ in values])
