@@ -39,6 +39,10 @@ class Model:
         )
         self.persist(query_string, values)
 
+        query = self.query_class()
+        query.prepare(query_string, values)
+        self.id = query.create()
+
     def update(self):
         keys, values = self._get_keys_values()
         query_string = 'update {} set {} where id = (%s);'.format(

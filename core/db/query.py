@@ -40,6 +40,10 @@ class Query(DBConn):
         self.execute()
         return self._cursor.fetchall()
 
+    def create(self):
+        self.execute()
+        return self._cursor.fetchone()[0]
+
     def execute(self):
         args = (self._query_string, self._params) if self._params else (self._query_string,)
         self._connect()
