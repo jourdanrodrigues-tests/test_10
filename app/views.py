@@ -10,27 +10,24 @@ __all__ = [
 
 
 def get_recipes(request, **kwargs):
-    return Recipe().get_all()
+    return Recipe.query.fetch_all()
 
 
 def get_recipe(request, **kwargs):
-    return Recipe().get_one(id=kwargs['id'])
+    return Recipe.query.filter(id=kwargs['id']).fetch_one()
 
 
 def update_recipe(request, **kwargs):
-    data = {**kwargs, **request.get_payload()}
-    recipe = Recipe(**data)
-    recipe.update()
-    return recipe.serialize()
+    data = request.get_payload()
+    Recipe.query.filter(id=kwargs['id']).update(**data)
+    return {**kwargs, **data}
 
 
-def create_recipe(request, **kwargs):
-    data = {**kwargs, **request.get_payload()}
-    recipe = Recipe(**data)
-    recipe.create()
-    return recipe.serialize()
+def create_recipe(request):
+    data = request.get_payload()
+    return Recipe.query.create(**data)
 
 
 def delete_recipe(request, **kwargs):
-    Recipe(id=kwargs['id']).delete()
+    Recipe.query.filter(id=kwargs['id']).delete()
     return None, 204

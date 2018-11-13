@@ -1,7 +1,6 @@
-from typing import Iterable
-
 from core.db.helpers import call_close, get_autocommit_connection
 from core.environment import DB_DATA
+from core.exceptions import ProgrammingError
 
 
 class DBConn:
@@ -26,29 +25,90 @@ class DBConn:
 
 
 class Query(DBConn):
-    def __init__(self):
+    def __init__(self, model):
         super().__init__()
+        self.model = model
+        self._where = {}
 
-        self._params = None
-        self._query_string = None
+    def _get_where_statement(self):
+        where_clause = ' and '.join(
+            ['{} = %s'.format(field) for field in self._where.keys()],
+        )
+        return ' where {};'.format(where_clause)
 
-    def prepare(self, query_string: str, params: Iterable = None):
-        self._params = params
-        self._query_string = query_string
+    def _fetch(self):
+        query_string = 'select {} from {}'.format(
+            ', '.join(self.model.fields),
+            self.model.get_table_name(),
+        )
+
+        if self._where:
+            query_string += self._get_where_statement()
+            self._run_query(query_string, list(self._where.values()))
+        else:
+            self._run_query(query_string + ';')
+
+    def filter(self, **kwargs):
+        self._where = {**self._where, **kwargs}
+        return self
 
     def fetch_all(self):
-        self.execute()
-        return self._cursor.fetchall()
+        self._fetch()
+        return [
+            {field: value for field, value in zip(self.model.fields, entry)}
+            for entry in self._cursor.fetchall()
+        ]
 
     def fetch_one(self):
-        self.execute()
-        return self._cursor.fetchone()
+        self._fetch()
+        return {field: value for field, value in zip(self.model.fields, self._cursor.fetchone())}
 
-    def create(self):
-        self.execute()
-        return self._cursor.fetchone()[0]
+    def create(self, **data):
+        keys = []
+        values = []
+        for field, value in data.items():
+            if field == 'id':
+                continue
+            keys.append(field)
+            values.append(value)
 
-    def execute(self):
-        args = (self._query_string, self._params) if self._params else (self._query_string,)
+        query_string = 'insert into {} ({}) values ({}) returning id;'.format(
+            self.model.get_table_name(),
+            ', '.join(keys),
+            ', '.join(['%s' for _ in keys])
+        )
+        self._run_query(query_string, values)
+        created_id = self._cursor.fetchone()[0]
+        return {'id': created_id, **data}
+
+    def update(self, **data):
+        query_string = 'update {} set {}'.format(
+            self.model.get_table_name(),
+            ', '.join(['{} = %s'.format(key) for key in data.keys()]),
+        )
+
+        if self._where:
+            query_string += self._get_where_statement()
+            values = list(data.values()) + list(self._where.values())
+        else:
+            query_string += ';'
+            values = data.values()
+
+        self._run_query(query_string, values)
+        return self._cursor.rowcount
+
+    def delete(self, force=True):
+        query_string = 'delete from {}'.format(self.model.get_table_name())
+        if not self._where:
+            if not force:
+                raise ProgrammingError('Cannot delete without filtering or setting "force" to true.')
+            self._run_query(query_string)
+        else:
+            query_string += self._get_where_statement()
+            self._run_query(query_string, list(self._where.values()))
+
+        return self._cursor.rowcount
+
+    def _run_query(self, *args, **kwargs):
         self._connect()
-        self._cursor.execute(*args)
+        self._cursor.execute(*args, **kwargs)
