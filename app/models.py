@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from core.db.query import Query
+from core.exceptions import ProgrammingError
 
 
 class Model:
@@ -22,16 +23,42 @@ class Model:
     def serialize(self):
         return {field: getattr(self, field) for field in self._fields}
 
+    def entry_to_dict(self, entry: tuple) -> dict:
+        return {field: value for field, value in zip(self._fields, entry)}
+
+    def get_one(self, **query_filter):
+        query = self.query_class()
+
+        if len(query_filter) == 0:
+            query.prepare('select {} from {};'.format(
+                ', '.join(self._fields),
+                self.get_table_name(),
+            ))
+        else:
+            fields = []
+            values = []
+            for field, value in query_filter.items():
+                if field not in self._fields:
+                    raise ProgrammingError('Field "{}" not present in "{}".'.format(field, self.get_table_name()))
+                fields.append(field)
+                values.append(value)
+
+            query_string = 'select {} from {} where {};'.format(
+                ', '.join(self._fields),
+                self.get_table_name(),
+                ' and '.join(['{} = %s'.format(field) for field in fields])
+            )
+            query.prepare(query_string, values)
+
+        return self.entry_to_dict(query.fetch_one())
+
     def get_all(self):
         query = self.query_class()
         query.prepare('select {} from {};'.format(
             ', '.join(self._fields),
             self.get_table_name(),
         ))
-        return [
-            {field: value for field, value in zip(self._fields, entry)}
-            for entry in query.fetch_all()
-        ]
+        return [self.entry_to_dict(entry) for entry in query.fetch_all()]
 
     def create(self):
         keys, values = self._get_keys_values()

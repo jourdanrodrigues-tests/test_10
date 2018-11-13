@@ -3,21 +3,18 @@ from app.models import Recipe
 __all__ = [
     'update_recipe',
     'create_recipe',
-    'get_record',
+    'get_recipe',
     'get_recipes',
     'delete_recipe',
 ]
-
-records = {}
 
 
 def get_recipes(request, **kwargs):
     return Recipe().get_all()
 
 
-def get_record(request, **kwargs):
-    key = request.path[8:]
-    return (records[key], 200) if key in records else (None, 404)
+def get_recipe(request, **kwargs):
+    return Recipe().get_one(id=kwargs['id'])
 
 
 def update_recipe(request, **kwargs):

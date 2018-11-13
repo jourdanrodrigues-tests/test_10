@@ -40,6 +40,10 @@ class Query(DBConn):
         self.execute()
         return self._cursor.fetchall()
 
+    def fetch_one(self):
+        self.execute()
+        return self._cursor.fetchone()
+
     def create(self):
         self.execute()
         return self._cursor.fetchone()[0]
