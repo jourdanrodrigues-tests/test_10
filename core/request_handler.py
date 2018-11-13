@@ -9,8 +9,11 @@ __all__ = [
 ]
 
 
-# noinspection PyUnresolvedReferences,PyPep8Naming
+# noinspection PyPep8Naming
 class MethodsMixin:
+    def handle_method(self, method: str) -> None:
+        raise NotImplementedError()
+
     def do_HEAD(self):
         self.handle_method('HEAD')
 
