@@ -1,10 +1,10 @@
 from http.server import HTTPServer
 
-from core import PORT, RESTRequestHandler
+from core import PORT, RequestHandler
 
 
 if __name__ == '__main__':
-    http_server = HTTPServer(('', PORT), RESTRequestHandler)
+    http_server = HTTPServer(('', PORT), RequestHandler)
     print('Starting HTTP server at port {}'.format(PORT))
     try:
         http_server.serve_forever()

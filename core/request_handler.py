@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler
 from app.routes import routes
 
 __all__ = [
-    'RESTRequestHandler',
+    'RequestHandler',
 ]
 
 
@@ -33,7 +33,7 @@ class MethodsMixin:
         self.handle_method('DELETE')
 
 
-class RESTRequestHandler(MethodsMixin, BaseHTTPRequestHandler):
+class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
     def get_route(self) -> tuple:
         for path, route in routes.items():
             match = re.match(path, self.path)
