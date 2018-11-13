@@ -22,14 +22,16 @@ def get_record(request, **kwargs):
 
 def update_recipe(request, **kwargs):
     data = {**kwargs, **request.get_payload()}
-    Recipe(**data).update()
-    return data
+    recipe = Recipe(**data)
+    recipe.update()
+    return recipe.serialize()
 
 
 def create_recipe(request, **kwargs):
     data = {**kwargs, **request.get_payload()}
-    Recipe(**data).create()
-    return data
+    recipe = Recipe(**data)
+    recipe.create()
+    return recipe.serialize()
 
 
 def delete_recipe(request, **kwargs):

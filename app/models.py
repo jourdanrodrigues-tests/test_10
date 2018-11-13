@@ -19,6 +19,9 @@ class Model:
     def get_table_name(self):
         return self.__class__.__name__.lower()
 
+    def serialize(self):
+        return {field: getattr(self, field) for field in self._fields}
+
     def get_all(self):
         query = self.query_class()
         query.prepare('select {} from {};'.format(
@@ -45,7 +48,7 @@ class Model:
 
     def update(self):
         keys, values = self._get_keys_values()
-        query_string = 'update {} set {} where id = (%s);'.format(
+        query_string = 'update {} set {} where id = %s;'.format(
             self.get_table_name(),
             ', '.join(['{} = %s'.format(key) for key in keys]),
         )
