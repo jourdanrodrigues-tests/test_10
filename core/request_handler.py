@@ -69,15 +69,16 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
             self.send_response(200)
             return
 
-        if method in route:
-            view = route[method]
-            response = view(self, **kwargs)
-            content, status_code = response if isinstance(response, tuple) else (response, 200)
-
-            self.send_response(status_code)
-            if content is not None:
-                self.send_body(content)
+        if method not in route:
+            self.send_response(405)
+            self.send_body({'detail': 'Method "{}" is not allowed'.format(method)})
             return
 
-        self.send_response(405)
-        self.send_body({'detail': 'Method "{}" is not allowed'.format(method)})
+        view = route[method]
+        response = view(self, **kwargs)
+        content, status_code = response if isinstance(response, tuple) else (response, 200)
+
+        self.send_response(status_code)
+        if content is not None:
+            self.send_body(content)
+
