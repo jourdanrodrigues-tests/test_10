@@ -36,8 +36,11 @@ class Query(DBConn):
         self._params = params
         self._query_string = query_string
 
+    def fetch_all(self):
+        self.execute()
+        return self._cursor.fetchall()
+
     def execute(self):
         args = (self._query_string, self._params) if self._params else (self._query_string,)
         self._connect()
         self._cursor.execute(*args)
-        self._close_connection()

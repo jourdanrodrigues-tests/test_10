@@ -4,15 +4,15 @@ __all__ = [
     'update_recipe',
     'create_recipe',
     'get_record',
-    'get_records',
+    'get_recipes',
     'delete_recipe',
 ]
 
 records = {}
 
 
-def get_records(request, **kwargs):
-    return records
+def get_recipes(request, **kwargs):
+    return Recipe().get_all()
 
 
 def get_record(request, **kwargs):

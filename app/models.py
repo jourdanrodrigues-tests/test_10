@@ -13,11 +13,22 @@ class Model:
         query.execute()
 
     @property
-    def _fields(self):
+    def _fields(self) -> Iterable:
         raise NotImplementedError()
 
     def get_table_name(self):
         return self.__class__.__name__.lower()
+
+    def get_all(self):
+        query = self.query_class()
+        query.prepare('select {} from {};'.format(
+            ', '.join(self._fields),
+            self.get_table_name(),
+        ))
+        return [
+            {field: value for field, value in zip(self._fields, entry)}
+            for entry in query.fetch_all()
+        ]
 
     def create(self):
         keys, values = self._get_keys_values()
