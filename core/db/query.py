@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Iterable
 
 from core.db.helpers import call_close, get_autocommit_connection
 from core.environment import DB_DATA
@@ -32,7 +32,7 @@ class Query(DBConn):
         self._params = None
         self._query_string = None
 
-    def prepare(self, query_string: str, params: Union[tuple, list] = None):
+    def prepare(self, query_string: str, params: Iterable = None):
         self._params = params
         self._query_string = query_string
 
