@@ -1,31 +1,37 @@
+from app.models import Recipe
+
 __all__ = [
-    'set_record',
+    'update_recipe',
+    'create_recipe',
     'get_record',
     'get_records',
-    'delete_record',
+    'delete_recipe',
 ]
-
 
 records = {}
 
 
-def get_records(handler, **kwargs):
+def get_records(request, **kwargs):
     return records
 
 
-def get_record(handler, **kwargs):
-    key = handler.path[8:]
+def get_record(request, **kwargs):
+    key = request.path[8:]
     return (records[key], 200) if key in records else (None, 404)
 
 
-def set_record(handler, **kwargs):
-    record_id = kwargs['id']
-    payload = handler.get_payload()
-    records[record_id] = payload
-    return payload
+def update_recipe(request, **kwargs):
+    data = {**kwargs, **request.get_payload()}
+    Recipe(**data).update()
+    return data
 
 
-def delete_record(handler, **kwargs):
-    key = handler.path[8:]
-    del records[key]
+def create_recipe(request, **kwargs):
+    data = {**kwargs, **request.get_payload()}
+    Recipe(**data).create()
+    return data
+
+
+def delete_recipe(request, **kwargs):
+    Recipe(id=kwargs['id']).delete()
     return None, 204

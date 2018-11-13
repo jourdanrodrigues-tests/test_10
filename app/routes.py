@@ -1,4 +1,4 @@
-from app.views import get_records, set_record, get_record, delete_record
+from app.views import get_records, update_recipe, create_recipe, get_record, delete_recipe
 
 __all__ = [
     'routes',
@@ -7,11 +7,12 @@ __all__ = [
 routes = {
     r'^/records/$': {
         'GET': get_records,
+        'POST': create_recipe,
     },
     r'^/records/(?P<id>.+)/': {
         'GET': get_record,
-        'PUT': set_record,
-        'PATCH': set_record,
-        'DELETE': delete_record,
+        'PUT': update_recipe,
+        'PATCH': update_recipe,
+        'DELETE': delete_recipe,
     },
 }
