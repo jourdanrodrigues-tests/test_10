@@ -1,6 +1,10 @@
-from core.db.helpers import call_close, get_autocommit_connection
+from db.helpers import call_close, get_autocommit_connection
 from core.environment import DB_DATA
 from core.exceptions import ProgrammingError
+
+__all__ = [
+    'Query',
+]
 
 
 class DBConn:

@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from core.db.query import Query
+from db.query import Query
 
 
 class ModelMetaclass(type):

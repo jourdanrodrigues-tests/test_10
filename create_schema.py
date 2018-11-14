@@ -2,7 +2,7 @@ import re
 
 import psycopg2
 
-from core.db.helpers import get_autocommit_connection, call_close
+from db.helpers import get_autocommit_connection, call_close
 from core.environment import DB_DATA
 
 
