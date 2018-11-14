@@ -58,7 +58,7 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
 
     def get_route(self) -> tuple:
         for path, route in self.routes.items():
-            match = re.match(path, self.path)
+            match = re.match(path, self.path.split('?')[0])
             if match:
                 return route, match.groupdict()
         return None, {}
