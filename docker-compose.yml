@@ -14,7 +14,7 @@ services:
 
   server:
     build: .
-    command: python server.py
+    command: python create_schema.py && python server.py
     environment:
       - DATABASE_URL=postgres://hellofresh:hellofresh@db/hellofresh
     volumes:
