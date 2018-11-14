@@ -1,7 +1,7 @@
 from http.server import HTTPServer
 
-from core import PORT, RequestHandler
-
+from core.environment import PORT
+from core.request import RequestHandler
 
 if __name__ == '__main__':
     http_server = HTTPServer(('', PORT), RequestHandler)

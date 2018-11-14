@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from core import RequestHandler
+from core.request import RequestHandler
 
 
 class TestGetQueryParams:

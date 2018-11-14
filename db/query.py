@@ -1,6 +1,6 @@
-from db.helpers import call_close, get_autocommit_connection
 from core.environment import DB_DATA
 from core.exceptions import ProgrammingError
+from db.helpers import call_close, get_autocommit_connection
 
 __all__ = [
     'Query',
