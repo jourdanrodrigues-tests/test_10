@@ -18,14 +18,12 @@ def get_recipe(request, **kwargs):
 
 
 def update_recipe(request, **kwargs):
-    data = request.get_payload()
-    Recipe.query.filter(id=kwargs['id']).update(**data)
-    return {**kwargs, **data}
+    Recipe.query.filter(id=kwargs['id']).update(**request.data)
+    return {**kwargs, **request.data}
 
 
 def create_recipe(request):
-    data = request.get_payload()
-    return Recipe.query.create(**data)
+    return Recipe.query.create(**request.data)
 
 
 def delete_recipe(request, **kwargs):

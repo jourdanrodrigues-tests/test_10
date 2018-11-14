@@ -9,6 +9,9 @@ __all__ = [
 ]
 
 
+METHODS_WITH_BODY = ['POST', 'PUT', 'PATCH', 'DELETE']
+
+
 # noinspection PyPep8Naming
 class MethodsMixin:
     def handle_method(self, method: str) -> None:
@@ -34,6 +37,11 @@ class MethodsMixin:
 
 
 class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.data = None
+
     def get_route(self) -> tuple:
         for path, route in routes.items():
             match = re.match(path, self.path)
@@ -41,11 +49,10 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
                 return route, match.groupdict()
         return None, {}
 
-    def get_payload(self) -> dict:
+    def _get_payload(self) -> dict:
         payload_length = int(self.headers.get('Content-Length'))
         payload = self.rfile.read(payload_length)
-        payload = json.loads(payload)
-        return payload
+        return json.loads(payload)
 
     def send_response(self, code: int, message: str = None):
         super().send_response(code, message)
@@ -74,6 +81,9 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
             self.send_body({'detail': 'Method "{}" is not allowed'.format(method)})
             return
 
+        if method in METHODS_WITH_BODY:
+            self.data = self._get_payload()
+
         view = route[method]
         response = view(self, **kwargs)
         content, status_code = response if isinstance(response, tuple) else (response, 200)
@@ -81,4 +91,3 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
         self.send_response(status_code)
         if content is not None:
             self.send_body(content)
-
