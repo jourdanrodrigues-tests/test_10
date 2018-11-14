@@ -48,6 +48,35 @@ def create_recipe_table_if_not_exists():
     call_close(cursor, connection)
 
 
+def create_user_table_if_not_exists():
+    connection = get_autocommit_connection(**DB_DATA)
+    cursor = connection.cursor()
+
+    cursor.execute('CREATE TABLE IF NOT EXISTS public.user (id SERIAL PRIMARY KEY);')
+
+    call_close(cursor, connection)
+
+
+def create_rating_table_if_not_exists():
+    connection = get_autocommit_connection(**DB_DATA)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS public.rating (
+        id SERIAL PRIMARY KEY,
+        value INTEGER NOT NULL,
+        recipe_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES public.user (id),
+        FOREIGN KEY (recipe_id) REFERENCES public.recipe (id)
+    );
+    """)
+
+    call_close(cursor, connection)
+
+
 if __name__ == '__main__':
     create_database_if_not_exists()
     create_recipe_table_if_not_exists()
+    create_user_table_if_not_exists()
+    create_rating_table_if_not_exists()
