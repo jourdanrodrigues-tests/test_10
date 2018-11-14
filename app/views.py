@@ -12,13 +12,14 @@ __all__ = [
 
 
 def get_recipes(request, **kwargs) -> List[dict]:
-    return Recipe.query.fetch_all()
+    return [recipe.to_dict() for recipe in Recipe.query.fetch_all()]
 
 
 def get_recipe(request, **kwargs) -> Union[dict, tuple]:
     recipe_id = kwargs['id']
     try:
-        return Recipe.query.filter(id=recipe_id).fetch_one()
+        recipe = Recipe.query.filter(id=recipe_id).fetch_one()
+        return recipe.to_dict()
     except Recipe.DoesNotExist:
         return {'detail': 'Recipe of ID {} does not exist.'.format(recipe_id)}, 404
 
@@ -30,7 +31,8 @@ def update_recipe(request, **kwargs) -> dict:
 
 
 def create_recipe(request) -> dict:
-    return Recipe.query.create(**request.data)
+    recipe = Recipe.query.create(**request.data)
+    return recipe.to_dict()
 
 
 def delete_recipe(request, **kwargs) -> tuple:

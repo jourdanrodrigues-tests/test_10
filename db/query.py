@@ -54,23 +54,23 @@ class Query(DBConn):
         else:
             self._run_query(query_string + ';')
 
+    def _parse_entry_to_instance(self, entry: Iterable):
+        return self.model(**{field: value for field, value in zip(self.model.fields, entry)})
+
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
         return self
 
     def fetch_all(self):
         self._fetch()
-        return [
-            {field: value for field, value in zip(self.model.fields, entry)}
-            for entry in self._cursor.fetchall()
-        ]
+        return [self._parse_entry_to_instance(entry) for entry in self._cursor.fetchall()]
 
     def fetch_one(self):
         self._fetch()
         entry = self._cursor.fetchone()
         if entry is None:
             raise self.model.DoesNotExist
-        return {field: value for field, value in zip(self.model.fields, entry)}
+        return self._parse_entry_to_instance(entry)
 
     def create(self, **data):
         keys = []
@@ -88,7 +88,7 @@ class Query(DBConn):
         )
         self._run_query(query_string, values)
         created_id = self._cursor.fetchone()[0]
-        return {'id': created_id, **data}
+        return self.model(**{'id': created_id, **data})
 
     def update(self, **data):
         query_string = 'update {} set {}'.format(
@@ -142,3 +142,6 @@ class Model(metaclass=ModelMetaclass):
 
     class DoesNotExist(Exception):
         pass
+
+    def to_dict(self):
+        return {field: getattr(self, field) for field in self.fields}
