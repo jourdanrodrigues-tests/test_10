@@ -36,11 +36,27 @@ class Query(DBConn):
         self.model = model
         self._where = {}
 
-    def _get_where_statement(self):
-        where_clause = ' and '.join(
-            ['{} = %s'.format(field) for field in self._where.keys()],
-        )
-        return ' where {};'.format(where_clause)
+    def _get_where_statement_and_values(self) -> tuple:
+        fields = []
+        values = []
+        for field, value in self._where.items():
+            if '__contains' in field:
+                fields.append('{} like %s'.format(field.replace('__contains', '')))
+                values.append('%{}%'.format(value))
+            elif '__startswith' in field:
+                fields.append('{} like %s'.format(field.replace('__startswith', '')))
+                values.append('{}%'.format(value))
+            elif '__endswith' in field:
+                fields.append('{} like %s'.format(field.replace('__endswith', '')))
+                values.append('%{}'.format(value))
+            elif '__in' in field:
+                fields.append('{} in %s'.format(field.replace('__in', '')))
+                values.append('({})'.format(', '.join(value)))
+            else:
+                fields.append('{} = %s'.format(field))
+                values.append(value)
+
+        return ' where {};'.format(' and '.join(fields)), values
 
     def _fetch(self):
         query_string = 'select {} from {}'.format(
@@ -49,8 +65,9 @@ class Query(DBConn):
         )
 
         if self._where:
-            query_string += self._get_where_statement()
-            self._run_query(query_string, list(self._where.values()))
+            where, values = self._get_where_statement_and_values()
+            query_string += where
+            self._run_query(query_string, values)
         else:
             self._run_query(query_string + ';')
 
@@ -97,8 +114,9 @@ class Query(DBConn):
         )
 
         if self._where:
-            query_string += self._get_where_statement()
-            values = list(data.values()) + list(self._where.values())
+            where, values = self._get_where_statement_and_values()
+            query_string += where
+            values = list(data.values()) + values
         else:
             query_string += ';'
             values = data.values()
@@ -113,8 +131,9 @@ class Query(DBConn):
                 raise ProgrammingError('Cannot delete without filtering or setting "force" to true.')
             self._run_query(query_string)
         else:
-            query_string += self._get_where_statement()
-            self._run_query(query_string, list(self._where.values()))
+            where, values = self._get_where_statement_and_values()
+            query_string += where
+            self._run_query(query_string, values)
 
         return self._cursor.rowcount
 
