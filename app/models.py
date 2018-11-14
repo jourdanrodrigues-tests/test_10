@@ -5,7 +5,7 @@ from core.db.query import Query
 
 class ModelMetaclass(type):
     @property
-    def query(cls):
+    def query(cls) -> Query:
         return Query(model=cls)
 
 
@@ -17,14 +17,8 @@ class Model(metaclass=ModelMetaclass):
         raise NotImplementedError()
 
     @classmethod
-    def get_table_name(cls):
+    def get_table_name(cls) -> str:
         return cls.__name__.lower()
-
-    def serialize(self):
-        return {field: getattr(self, field) for field in self.fields}
-
-    def entry_to_dict(self, entry: tuple) -> dict:
-        return {field: value for field, value in zip(self.fields, entry)}
 
     class DoesNotExist(Exception):
         pass

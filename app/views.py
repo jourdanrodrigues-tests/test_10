@@ -1,19 +1,21 @@
+from typing import Union
+
 from app.models import Recipe
 
 __all__ = [
-    'update_recipe',
-    'create_recipe',
     'get_recipe',
     'get_recipes',
+    'create_recipe',
+    'update_recipe',
     'delete_recipe',
 ]
 
 
-def get_recipes(request, **kwargs):
+def get_recipes(request, **kwargs) -> list[dict]:
     return Recipe.query.fetch_all()
 
 
-def get_recipe(request, **kwargs):
+def get_recipe(request, **kwargs) -> Union[dict, tuple]:
     recipe_id = kwargs['id']
     try:
         return Recipe.query.filter(id=recipe_id).fetch_one()
@@ -21,15 +23,16 @@ def get_recipe(request, **kwargs):
         return {'detail': 'Recipe of ID {} does not exist.'.format(recipe_id)}, 404
 
 
-def update_recipe(request, **kwargs):
-    Recipe.query.filter(id=kwargs['id']).update(**request.data)
-    return {**kwargs, **request.data}
+def update_recipe(request, **kwargs) -> dict:
+    recipe_id = kwargs['id']
+    Recipe.query.filter(id=recipe_id).update(**request.data)
+    return {'id': recipe_id, **request.data}
 
 
-def create_recipe(request):
+def create_recipe(request) -> dict:
     return Recipe.query.create(**request.data)
 
 
-def delete_recipe(request, **kwargs):
+def delete_recipe(request, **kwargs) -> tuple:
     Recipe.query.filter(id=kwargs['id']).delete()
     return None, 204

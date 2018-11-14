@@ -17,22 +17,22 @@ class MethodsMixin:
     def handle_method(self, method: str) -> None:
         raise NotImplementedError()
 
-    def do_HEAD(self):
+    def do_HEAD(self) -> None:
         self.handle_method('HEAD')
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         self.handle_method('GET')
 
-    def do_POST(self):
+    def do_POST(self) -> None:
         self.handle_method('POST')
 
-    def do_PUT(self):
+    def do_PUT(self) -> None:
         self.handle_method('PUT')
 
-    def do_PATCH(self):
+    def do_PATCH(self) -> None:
         self.handle_method('PUT')
 
-    def do_DELETE(self):
+    def do_DELETE(self) -> None:
         self.handle_method('DELETE')
 
 
@@ -54,19 +54,19 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
         payload = self.rfile.read(payload_length)
         return json.loads(payload)
 
-    def send_response(self, code: int, message: str = None):
+    def send_response(self, code: int, message: str = None) -> None:
         super().send_response(code, message)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
 
-    def send_body(self, content: dict):
+    def send_body(self, content: dict) -> None:
         self.wfile.write(json.dumps(content).encode())
 
-    def send_not_found_response(self):
+    def send_not_found_response(self) -> None:
         self.send_response(404)
         self.send_body({'detail': 'Not found'})
 
-    def handle_method(self, method):
+    def handle_method(self, method: str) -> None:
         route, kwargs = self.get_route()
         if route is None:
             self.send_not_found_response()

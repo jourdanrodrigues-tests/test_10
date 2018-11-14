@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 
-def call_close(*args):
+def call_close(*args) -> None:
     for arg in args:
         arg.close()
 
