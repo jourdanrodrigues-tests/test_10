@@ -12,7 +12,13 @@ __all__ = [
 
 
 def get_recipes(request, **kwargs) -> List[dict]:
-    return [recipe.to_dict() for recipe in Recipe.query.fetch_all()]
+    name_search = request.query_params.get('name')
+    if name_search:
+        recipes = Recipe.query.filter(name__contains=name_search).fetch_all()
+    else:
+        recipes = Recipe.query.fetch_all()
+
+    return [recipe.to_dict() for recipe in recipes]
 
 
 def get_recipe(request, **kwargs) -> Union[dict, tuple]:
