@@ -3,8 +3,6 @@ import re
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
-from app.routes import routes
-
 __all__ = [
     'RequestHandler',
 ]
@@ -39,10 +37,11 @@ class MethodsMixin:
 
 class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
         self.data = None
         self.query_params = None
+        self.routes = kwargs.pop('routes')
+
+        super().__init__(*args, **kwargs)
 
     def get_query_params(self):
         path = self.path.split('?')
@@ -58,7 +57,7 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
         }
 
     def get_route(self) -> tuple:
-        for path, route in routes.items():
+        for path, route in self.routes.items():
             match = re.match(path, self.path)
             if match:
                 return route, match.groupdict()
