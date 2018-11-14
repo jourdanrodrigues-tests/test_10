@@ -1,27 +1,4 @@
-from typing import Iterable
-
-from db.query import Query
-
-
-class ModelMetaclass(type):
-    @property
-    def query(cls) -> Query:
-        return Query(model=cls)
-
-
-class Model(metaclass=ModelMetaclass):
-    id = None
-
-    @property
-    def fields(self) -> Iterable:
-        raise NotImplementedError()
-
-    @classmethod
-    def get_table_name(cls) -> str:
-        return cls.__name__.lower()
-
-    class DoesNotExist(Exception):
-        pass
+from db.query import Model
 
 
 class Recipe(Model):

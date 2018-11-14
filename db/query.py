@@ -1,9 +1,11 @@
+from typing import Iterable
+
 from core.environment import DB_DATA
 from core.exceptions import ProgrammingError
 from db.helpers import call_close, get_autocommit_connection
 
 __all__ = [
-    'Query',
+    'Model',
 ]
 
 
@@ -119,3 +121,24 @@ class Query(DBConn):
     def _run_query(self, *args, **kwargs):
         self._connect()
         self._cursor.execute(*args, **kwargs)
+
+
+class ModelMetaclass(type):
+    @property
+    def query(cls) -> Query:
+        return Query(model=cls)
+
+
+class Model(metaclass=ModelMetaclass):
+    id = None
+
+    @property
+    def fields(self) -> Iterable:
+        raise NotImplementedError()
+
+    @classmethod
+    def get_table_name(cls) -> str:
+        return cls.__name__.lower()
+
+    class DoesNotExist(Exception):
+        pass
