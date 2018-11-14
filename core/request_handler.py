@@ -1,6 +1,7 @@
 import json
 import re
 from http.server import BaseHTTPRequestHandler
+from urllib.parse import parse_qs
 
 from app.routes import routes
 
@@ -41,6 +42,20 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
         self.data = None
+        self.query_params = None
+
+    def get_query_params(self):
+        path = self.path.split('?')
+
+        no_query_params = len(path) < 2
+        if no_query_params:
+            return {}
+
+        query_params = parse_qs(path[1])
+        return {
+            key: value[0] if len(value) == 1 else value
+            for key, value in query_params.items()
+        }
 
     def get_route(self) -> tuple:
         for path, route in routes.items():
@@ -81,6 +96,7 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
             self.send_body({'detail': 'Method "{}" is not allowed'.format(method)})
             return
 
+        self.query_params = self.get_query_params()
         if method in METHODS_WITH_BODY:
             self.data = self._get_payload()
 
