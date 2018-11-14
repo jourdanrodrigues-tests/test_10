@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from app.models import Recipe
 
@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-def get_recipes(request, **kwargs) -> list[dict]:
+def get_recipes(request, **kwargs) -> List[dict]:
     return Recipe.query.fetch_all()
 
 
