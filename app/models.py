@@ -26,6 +26,9 @@ class Model(metaclass=ModelMetaclass):
     def entry_to_dict(self, entry: tuple) -> dict:
         return {field: value for field, value in zip(self.fields, entry)}
 
+    class DoesNotExist(Exception):
+        pass
+
 
 class Recipe(Model):
     fields = ['id', 'name', 'difficulty', 'vegetarian', 'preparation_time']

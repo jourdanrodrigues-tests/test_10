@@ -14,7 +14,11 @@ def get_recipes(request, **kwargs):
 
 
 def get_recipe(request, **kwargs):
-    return Recipe.query.filter(id=kwargs['id']).fetch_one()
+    recipe_id = kwargs['id']
+    try:
+        return Recipe.query.filter(id=recipe_id).fetch_one()
+    except Recipe.DoesNotExist:
+        return {'detail': 'Recipe of ID {} does not exist.'.format(recipe_id)}, 404
 
 
 def update_recipe(request, **kwargs):

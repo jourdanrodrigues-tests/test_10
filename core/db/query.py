@@ -61,7 +61,10 @@ class Query(DBConn):
 
     def fetch_one(self):
         self._fetch()
-        return {field: value for field, value in zip(self.model.fields, self._cursor.fetchone())}
+        entry = self._cursor.fetchone()
+        if entry is None:
+            raise self.model.DoesNotExist
+        return {field: value for field, value in zip(self.model.fields, entry)}
 
     def create(self, **data):
         keys = []
