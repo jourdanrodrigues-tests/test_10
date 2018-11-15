@@ -162,5 +162,19 @@ class Model(metaclass=ModelMetaclass):
     def to_dict(self):
         return {field: getattr(self, field) for field in self.fields}
 
+    def create(self, **data):
+        self.id = self.__class__.query.create(**data).id
+
+    def update(self, **data):
+        entry_id = data.pop('id', self.id)
+        self.__class__.query.filter(id=entry_id).update(**data)
+
+    def save(self):
+        data = self.to_dict()
+        if self.id:
+            self.update(**data)
+        else:
+            self.create(**data)
+
     class DoesNotExist(Exception):
         pass
