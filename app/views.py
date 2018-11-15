@@ -2,6 +2,7 @@ from typing import Union, List
 
 from app.authorizations import authentication_required
 from app.models import Recipe
+from core.exceptions import NotFoundError
 
 __all__ = [
     'get_recipe',
@@ -28,7 +29,7 @@ def get_recipe(request, **kwargs) -> Union[dict, tuple]:
         recipe = Recipe.query.filter(id=recipe_id).fetch_one()
         return recipe.to_dict()
     except Recipe.DoesNotExist:
-        return {'detail': 'Recipe of ID {} does not exist.'.format(recipe_id)}, 404
+        raise NotFoundError('Recipe of ID {} does not exist.'.format(recipe_id))
 
 
 @authentication_required
