@@ -1,5 +1,6 @@
 from typing import Union, List
 
+from app.authorizations import authentication_required
 from app.models import Recipe
 
 __all__ = [
@@ -30,17 +31,20 @@ def get_recipe(request, **kwargs) -> Union[dict, tuple]:
         return {'detail': 'Recipe of ID {} does not exist.'.format(recipe_id)}, 404
 
 
+@authentication_required
 def update_recipe(request, **kwargs) -> dict:
     recipe_id = kwargs['id']
     Recipe.query.filter(id=recipe_id).update(**request.data)
     return {'id': recipe_id, **request.data}
 
 
+@authentication_required
 def create_recipe(request) -> dict:
     recipe = Recipe.query.create(**request.data)
     return recipe.to_dict()
 
 
+@authentication_required
 def delete_recipe(request, **kwargs) -> tuple:
     Recipe.query.filter(id=kwargs['id']).delete()
     return None, 204
