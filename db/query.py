@@ -99,7 +99,7 @@ class Query(DBConn):
             keys.append(field)
             values.append(value)
 
-        query_string = 'insert into {} ({}) values ({}) returning id;'.format(
+        query_string = 'insert into "{}" ({}) values ({}) returning id;'.format(
             self.model.get_table_name(),
             ', '.join(keys),
             ', '.join(['%s' for _ in keys])
@@ -109,7 +109,7 @@ class Query(DBConn):
         return self.model(**{'id': created_id, **data})
 
     def update(self, **data):
-        query_string = 'update {} set {}'.format(
+        query_string = 'update "{}" set {}'.format(
             self.model.get_table_name(),
             ', '.join(['{} = %s'.format(key) for key in data.keys()]),
         )
@@ -126,7 +126,7 @@ class Query(DBConn):
         return self._cursor.rowcount
 
     def delete(self, force=True):
-        query_string = 'delete from {}'.format(self.model.get_table_name())
+        query_string = 'delete from "{}"'.format(self.model.get_table_name())
         if not self._where:
             if not force:
                 raise ProgrammingError('Cannot delete without filtering or setting "force" to true.')
