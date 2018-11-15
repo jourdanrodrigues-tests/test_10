@@ -4,6 +4,7 @@ from db.query import Model, Query
 
 class RecipeQuery(Query):
     def create(self, **data):
+        # TODO: Implement this in Postgres
         difficulty_choices = self.model.RECIPE_DIFFICULTIES_CHOICES
         if data.get('difficulty') not in difficulty_choices:
             first, last = difficulty_choices[0], difficulty_choices[-1]
