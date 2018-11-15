@@ -159,8 +159,8 @@ class Model(metaclass=ModelMetaclass):
     def get_table_name(cls) -> str:
         return cls.__name__.lower()
 
-    class DoesNotExist(Exception):
-        pass
-
     def to_dict(self):
         return {field: getattr(self, field) for field in self.fields}
+
+    class DoesNotExist(Exception):
+        pass
