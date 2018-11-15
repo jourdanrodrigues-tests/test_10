@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Recipe 1",
+    "preparation_time": 15,
+    "difficulty": 1,
+    "vegetarian": false
+  },
+  {
+    "id": 2,
+    "name": "Recipe 2",
+    "preparation_time": 5,
+    "difficulty": 3,
+    "vegetarian": true
+  },
+  {
+    "id": 3,
+    "name": "Recipe 3",
+    "preparation_time": 1,
+    "difficulty": 2,
+    "vegetarian": true
+  },
+  {
+    "id": 4,
+    "name": "Recipe 4",
+    "preparation_time": 20,
+    "difficulty": 3,
+    "vegetarian": false
+  }
+]
