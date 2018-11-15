@@ -5,11 +5,11 @@ __all__ = [
 ]
 
 routes = {
-    r'^/records/$': {
+    r'^/recipes/$': {
         'GET': get_recipes,
         'POST': create_recipe,
     },
-    r'^/records/(?P<id>.+)/': {
+    r'^/recipes/(?P<id>.+)/': {
         'GET': get_recipe,
         'PUT': update_recipe,
         'PATCH': update_recipe,
