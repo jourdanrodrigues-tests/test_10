@@ -18,16 +18,6 @@ class Recipe(Model):
 
     RECIPE_DIFFICULTIES_CHOICES = [1, 2, 3]
 
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
-        self.name = kwargs.get('name')
-        self.difficulty = kwargs.get('difficulty')
-        self.vegetarian = kwargs.get('vegetarian')
-        self.preparation_time = kwargs.get('preparation_time')
-
 
 class User(Model):
     fields = ['id']
-
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')

@@ -154,6 +154,10 @@ class Model(metaclass=ModelMetaclass):
     id = None
     query_class = Query
 
+    def __init__(self, **kwargs):
+        for field in self.fields:
+            setattr(self, field, kwargs.get(field))
+
     @property
     def fields(self) -> Iterable:
         raise NotImplementedError()
