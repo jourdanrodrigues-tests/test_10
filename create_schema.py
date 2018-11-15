@@ -66,8 +66,6 @@ def create_rating_table_if_not_exists():
         id SERIAL PRIMARY KEY,
         value INTEGER NOT NULL,
         recipe_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES public.user (id),
         FOREIGN KEY (recipe_id) REFERENCES public.recipe (id)
     );
     """)
