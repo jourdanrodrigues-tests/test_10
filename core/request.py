@@ -3,10 +3,11 @@ import re
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
+from core.exceptions import APIError
+
 __all__ = [
     'RequestHandler',
 ]
-
 
 METHODS_WITH_BODY = ['POST', 'PUT', 'PATCH', 'DELETE']
 
@@ -100,7 +101,11 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
             self.data = self._get_payload()
 
         view = route[method]
-        response = view(self, **kwargs)
+        try:
+            response = view(self, **kwargs)
+        except APIError as exc:
+            response = {'detail': exc.message}, exc.status_code
+
         content, status_code = response if isinstance(response, tuple) else (response, 200)
 
         self.send_response(status_code)
