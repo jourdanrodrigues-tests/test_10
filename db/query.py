@@ -59,7 +59,7 @@ class Query(DBConn):
         return ' where {};'.format(' and '.join(fields)), values
 
     def _fetch(self):
-        query_string = 'select {} from {}'.format(
+        query_string = 'select {} from "{}"'.format(
             ', '.join(self.model.fields),
             self.model.get_table_name(),
         )
