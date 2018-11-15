@@ -1,10 +1,11 @@
 from typing import Union, List
 
 from app.authorizations import authentication_required
-from app.models import Recipe
+from app.models import Recipe, Rating
 from core.exceptions import NotFoundError
 
 __all__ = [
+    'set_rating',
     'get_recipe',
     'get_recipes',
     'create_recipe',
@@ -49,3 +50,14 @@ def create_recipe(request) -> dict:
 def delete_recipe(request, **kwargs) -> tuple:
     Recipe.query.filter(id=kwargs['id']).delete()
     return None, 204
+
+
+def set_rating(request, **kwargs) -> tuple:
+    recipe_id = kwargs['id']
+    try:
+        Recipe.query.filter(id=recipe_id).fetch_one()
+    except Recipe.DoesNotExist:
+        raise NotFoundError('Recipe of ID {} does not exist.'.format(recipe_id))
+
+    rating = Rating.query.create(recipe_id=int(recipe_id), **request.data)
+    return rating.to_dict()
