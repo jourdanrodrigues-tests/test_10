@@ -6,6 +6,7 @@ from db.helpers import call_close, get_autocommit_connection
 
 __all__ = [
     'Model',
+    'Query',
 ]
 
 
@@ -76,14 +77,14 @@ class Query(DBConn):
 
     @classmethod
     def as_metaclass(cls):
-        this_query_class = cls
+        query_class = cls
 
-        class ModelMetaclass(type):
+        class _ModelMetaclass(type):
             @property
-            def query(cls) -> this_query_class:
-                return this_query_class(model=cls)
+            def query(cls) -> query_class:
+                return query_class(model=cls)
 
-        return ModelMetaclass
+        return _ModelMetaclass
 
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
@@ -153,7 +154,13 @@ class Query(DBConn):
         self._cursor.execute(*args, **kwargs)
 
 
-class Model(metaclass=Query.as_metaclass()):
+class ModelMetaclass(type):
+    @property
+    def query(cls) -> Query:
+        return Query(model=cls)
+
+
+class Model(metaclass=ModelMetaclass):
     id = None
 
     @property
