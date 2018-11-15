@@ -74,6 +74,17 @@ class Query(DBConn):
     def _parse_entry_to_instance(self, entry: Iterable):
         return self.model(**{field: value for field, value in zip(self.model.fields, entry)})
 
+    @classmethod
+    def as_metaclass(cls):
+        this_query_class = cls
+
+        class ModelMetaclass(type):
+            @property
+            def query(cls) -> this_query_class:
+                return this_query_class(model=cls)
+
+        return ModelMetaclass
+
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
         return self
@@ -142,13 +153,7 @@ class Query(DBConn):
         self._cursor.execute(*args, **kwargs)
 
 
-class ModelMetaclass(type):
-    @property
-    def query(cls) -> Query:
-        return Query(model=cls)
-
-
-class Model(metaclass=ModelMetaclass):
+class Model(metaclass=Query.as_metaclass()):
     id = None
 
     @property
