@@ -75,17 +75,6 @@ class Query(DBConn):
     def _parse_entry_to_instance(self, entry: Iterable):
         return self.model(**{field: value for field, value in zip(self.model.fields, entry)})
 
-    @classmethod
-    def as_metaclass(cls):
-        query_class = cls
-
-        class _ModelMetaclass(type):
-            @property
-            def query(cls) -> query_class:
-                return query_class(model=cls)
-
-        return _ModelMetaclass
-
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
         return self
@@ -157,11 +146,13 @@ class Query(DBConn):
 class ModelMetaclass(type):
     @property
     def query(cls) -> Query:
-        return Query(model=cls)
+        query_class = getattr(cls, 'query_class')  # Gets rid of warning
+        return query_class(model=cls)
 
 
 class Model(metaclass=ModelMetaclass):
     id = None
+    query_class = Query
 
     @property
     def fields(self) -> Iterable:
