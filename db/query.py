@@ -91,20 +91,14 @@ class Query(DBConn):
         return self._parse_entry_to_instance(entry)
 
     def create(self, **data):
-        keys = []
-        values = []
-        for field, value in data.items():
-            if field == 'id':
-                continue
-            keys.append(field)
-            values.append(value)
+        keys = data.keys()
 
         query_string = 'insert into "{}" ({}) values ({}) returning id;'.format(
             self.model.get_table_name(),
             ', '.join(keys),
             ', '.join(['%s' for _ in keys])
         )
-        self._run_query(query_string, values)
+        self._run_query(query_string, list(data.values()))
         created_id = self._cursor.fetchone()[0]
         return self.model(**{'id': created_id, **data})
 
