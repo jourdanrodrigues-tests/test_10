@@ -21,3 +21,7 @@ class Recipe(Model):
 
 class User(Model):
     fields = ['id']
+
+
+class Rating(Model):
+    fields = ['id', 'recipe_id', 'value']
