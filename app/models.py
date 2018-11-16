@@ -1,4 +1,5 @@
 from core.exceptions import BadRequestError
+from db import fields
 from db.query import Model, Query
 
 
@@ -15,14 +16,18 @@ class RecipeQuery(Query):
 
 
 class Recipe(Model):
-    query_class = RecipeQuery
-    fields = ['id', 'name', 'difficulty', 'vegetarian', 'preparation_time']
-
     DIFFICULTIES_CHOICES = [1, 2, 3]
+
+    name = fields.VarCharField(length=40)
+    difficulty = fields.Field(type='integer')
+    vegetarian = fields.Field(type='boolean')
+    preparation_time = fields.Field(type='integer')
+
+    query_class = RecipeQuery
 
 
 class User(Model):
-    fields = ['id']
+    pass
 
 
 class RatingQuery(Query):
@@ -38,7 +43,9 @@ class RatingQuery(Query):
 
 
 class Rating(Model):
-    query_class = RatingQuery
-    fields = ['id', 'recipe_id', 'value']
-
     RATING_CHOICES = [1, 2, 3, 4, 5]
+
+    value = fields.Field(type='integer')
+    recipe_id = fields.ForeignKeyField(to=Recipe, type='integer', primary_key=True)
+
+    query_class = RatingQuery

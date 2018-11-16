@@ -2,6 +2,7 @@ from typing import Iterable
 
 from core.environment import DB_DATA
 from core.exceptions import ProgrammingError
+from db.fields import Field
 from db.helpers import call_close, get_autocommit_connection
 
 __all__ = [
@@ -138,6 +139,22 @@ class Query(DBConn):
 
 
 class ModelMetaclass(type):
+    def __init__(cls, *args, **kwargs):
+        cls.fields = {}
+
+        for key in dir(cls):
+            value = getattr(cls, key)
+
+            if isinstance(value, Field):
+                cls.fields[key] = value
+
+                if value.primary_key:
+                    cls.pk_field = key
+                if not value.column_name:
+                    value.column_name = key
+
+        super().__init__(*args, **kwargs)
+
     @property
     def query(cls) -> Query:
         query_class = getattr(cls, 'query_class')  # Gets rid of warning
@@ -145,23 +162,20 @@ class ModelMetaclass(type):
 
 
 class Model(metaclass=ModelMetaclass):
-    id = None
+    id = Field(type='serial', primary_key=True)
+    pk_field = None
     query_class = Query
 
     def __init__(self, **kwargs):
-        for field in self.fields:
+        for field in self.fields.keys():
             setattr(self, field, kwargs.get(field))
-
-    @property
-    def fields(self) -> Iterable:
-        raise NotImplementedError()
 
     @classmethod
     def get_table_name(cls) -> str:
         return cls.__name__.lower()
 
     def to_dict(self):
-        return {field: getattr(self, field) for field in self.fields}
+        return {field: getattr(self, field) for field in self.fields.keys()}
 
     class DoesNotExist(Exception):
         pass
