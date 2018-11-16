@@ -10,7 +10,7 @@ class APIError(Exception):
         raise NotImplementedError()
 
     def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', args[0])
+        self.message = kwargs.pop('message', self.message)
         super().__init__(*args, **kwargs)
 
 
