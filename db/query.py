@@ -76,6 +76,14 @@ class Query(DBConn):
     def _parse_entry_to_instance(self, entry: Iterable):
         return self.model(**{field: value for field, value in zip(self.model.fields, entry)})
 
+    def create_db_schema(self):
+        model = self.model
+        query_string = 'CREATE TABLE IF NOT EXISTS "{}" ({});'.format(
+            model.get_table_name(),
+            ', '.join([str(field) for field in model.fields.values()]),
+        )
+        self._run_query(query_string)
+
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
         return self
