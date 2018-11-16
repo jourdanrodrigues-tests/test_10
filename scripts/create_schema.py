@@ -1,6 +1,11 @@
+import os
 import re
+import sys
 
 import psycopg2
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.extend([BASE_DIR])
 
 from db.helpers import get_autocommit_connection, call_close
 from core.environment import DB_DATA
@@ -36,7 +41,7 @@ def create_recipe_table_if_not_exists():
     cursor = connection.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS public.recipe (
+    CREATE TABLE IF NOT EXISTS "recipe" (
         id SERIAL PRIMARY KEY,
         name VARCHAR(40) NOT NULL,
         preparation_time INTEGER NOT NULL,
@@ -52,7 +57,7 @@ def create_user_table_if_not_exists():
     connection = get_autocommit_connection(**DB_DATA)
     cursor = connection.cursor()
 
-    cursor.execute('CREATE TABLE IF NOT EXISTS public.user (id SERIAL PRIMARY KEY);')
+    cursor.execute('CREATE TABLE IF NOT EXISTS "user" (id SERIAL PRIMARY KEY);')
 
     call_close(cursor, connection)
 
@@ -62,11 +67,11 @@ def create_rating_table_if_not_exists():
     cursor = connection.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS public.rating (
+    CREATE TABLE IF NOT EXISTS "rating" (
         id SERIAL PRIMARY KEY,
         value INTEGER NOT NULL,
         recipe_id INTEGER NOT NULL,
-        FOREIGN KEY (recipe_id) REFERENCES public.recipe (id)
+        FOREIGN KEY (recipe_id) REFERENCES "recipe" (id)
     );
     """)
 
