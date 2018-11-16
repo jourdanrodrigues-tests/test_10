@@ -46,6 +46,6 @@ class Rating(Model):
     RATING_CHOICES = [1, 2, 3, 4, 5]
 
     value = fields.Field(type='integer')
-    recipe_id = fields.ForeignKeyField(to=Recipe, type='integer', primary_key=True)
+    recipe_id = fields.ForeignKeyField(to=Recipe, type='integer')
 
     query_class = RatingQuery
