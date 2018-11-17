@@ -61,7 +61,7 @@ class Query(DBConn):
                 fields.append('{} = %s'.format(field))
                 values.append(value)
 
-        return ' where {};'.format(' and '.join(fields)), values
+        return ' where {}'.format(' and '.join(fields)), values
 
     def _fetch(self):
         query_string = 'select {} from "{}"'.format(
@@ -71,7 +71,7 @@ class Query(DBConn):
 
         if self._where:
             where, values = self._get_where_statement_and_values()
-            query_string += where
+            query_string += where + ';'
             self._run_query(query_string, values)
         else:
             self._run_query(query_string + ';')
@@ -130,22 +130,19 @@ class Query(DBConn):
             query_string += where
             values = list(data.values()) + values
         else:
-            query_string += ';'
             values = data.values()
 
-        self._run_query(query_string, values)
+        self._run_query(query_string + ';', values)
         return self._cursor.rowcount
 
-    def delete(self, force=True):
+    def delete(self):
         query_string = 'delete from "{}"'.format(self.model.get_table_name())
         if not self._where:
-            if not force:
-                raise ProgrammingError('Cannot delete without filtering or setting "force" to true.')
-            self._run_query(query_string)
-        else:
-            where, values = self._get_where_statement_and_values()
-            query_string += where
-            self._run_query(query_string, values)
+            raise ProgrammingError('Cannot delete without filtering.')
+
+        where, values = self._get_where_statement_and_values()
+        query_string += where + ';'
+        self._run_query(query_string, values)
 
         return self._cursor.rowcount
 
