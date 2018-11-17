@@ -28,14 +28,19 @@ def get_recipe(request, **kwargs) -> Union[dict, tuple]:
     recipe_id = kwargs['id']
     try:
         recipe = Recipe.query.filter(id=recipe_id).fetch_one()
-        return recipe.to_dict()
     except Recipe.DoesNotExist:
-        raise NotFoundError('Recipe of ID {} does not exist.'.format(recipe_id))
+        raise NotFoundError()
+
+    return recipe.to_dict()
 
 
 @authentication_required
 def update_recipe(request, **kwargs) -> dict:
     recipe_id = int(kwargs['id'])
+
+    if not Recipe.query.filter(id=recipe_id).exists():
+        raise NotFoundError()
+
     if request.data:
         Recipe.query.filter(id=recipe_id).update(**request.data)
     return {'id': recipe_id, **request.data}
@@ -49,6 +54,9 @@ def create_recipe(request) -> dict:
 
 @authentication_required
 def delete_recipe(request, **kwargs) -> tuple:
+    if not Recipe.query.filter(id=kwargs['id']).exists():
+        raise NotFoundError()
+
     Recipe.query.filter(id=kwargs['id']).delete()
     return None, 204
 
@@ -57,7 +65,7 @@ def set_rating(request, **kwargs) -> tuple:
     recipe_id = kwargs['id']
 
     if not Recipe.query.filter(id=recipe_id).exists():
-        raise NotFoundError('Recipe of ID {} does not exist.'.format(recipe_id))
+        raise NotFoundError()
 
     rating = Rating.query.create(recipe_id=int(recipe_id), **request.data)
     return rating.to_dict()
