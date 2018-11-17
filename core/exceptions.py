@@ -9,8 +9,8 @@ class APIError(Exception):
     def status_code(self) -> int:
         raise NotImplementedError()
 
-    def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', self.message)
+    def __init__(self, message=None, *args, **kwargs):
+        self.message = message or self.message
         super().__init__(*args, **kwargs)
 
 
