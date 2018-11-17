@@ -31,7 +31,7 @@ def get_autocommit_connection(**kwargs):
 def create_database_if_not_exists(db_data):
     postgres_db_data = db_data.copy()
     postgres_db_data['dbname'] = 'postgres'
-    connection = get_autocommit_connection(**db_data)
+    connection = get_autocommit_connection(**postgres_db_data)
     cursor = connection.cursor()
     try:
         cursor.execute('CREATE DATABASE {};'.format(db_data['dbname']))
