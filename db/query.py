@@ -105,11 +105,16 @@ class Query(DBConn):
     def create(self, **data):
         keys = data.keys()
 
-        query_string = 'insert into "{}" ({}) values ({}) returning id;'.format(
-            self.model.get_table_name(),
-            ', '.join(keys),
-            ', '.join(['%s' for _ in keys])
-        )
+        query_string = 'insert into "{}"'.format(self.model.get_table_name())
+        if len(keys) == 0:
+            query_string += ' default values'
+        else:
+            query_string += ' ({}) values ({})'.format(
+                ', '.join(keys),
+                ', '.join(['%s' for _ in keys]),
+            )
+
+        query_string += ' returning id;'
         self._run_query(query_string, list(data.values()))
         created_id = self._cursor.fetchone()[0]
         return self.model(**{'id': created_id, **data})
