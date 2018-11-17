@@ -20,7 +20,7 @@ class BadRequestError(APIError):
 
 class UnauthorizedError(APIError):
     status_code = 401
-    message = 'Invalid authorization sent.'
+    message = 'Authorization not sent or invalid.'
 
 
 class NotFoundError(APIError):
