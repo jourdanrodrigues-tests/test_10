@@ -54,9 +54,8 @@ def delete_recipe(request, **kwargs) -> tuple:
 
 def set_rating(request, **kwargs) -> tuple:
     recipe_id = kwargs['id']
-    try:
-        Recipe.query.filter(id=recipe_id).fetch_one()
-    except Recipe.DoesNotExist:
+
+    if not Recipe.query.filter(id=recipe_id).exists():
         raise NotFoundError('Recipe of ID {} does not exist.'.format(recipe_id))
 
     rating = Rating.query.create(recipe_id=int(recipe_id), **request.data)
