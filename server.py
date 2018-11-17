@@ -5,13 +5,14 @@ from app.routes import routes
 from core.environment import PORT
 from core.request import RequestHandler
 
-if __name__ == '__main__':
+
+def initialize_server(port: int) -> None:
     http_server = HTTPServer(
-        ('', PORT),
+        ('', port),
         partial(RequestHandler, routes=routes),
     )
 
-    print('Starting HTTP server at port {}'.format(PORT))
+    print('Starting HTTP server at port {}'.format(port))
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
@@ -19,3 +20,7 @@ if __name__ == '__main__':
 
     print('Stopping HTTP server')
     http_server.server_close()
+
+
+if __name__ == '__main__':
+    initialize_server(PORT)
