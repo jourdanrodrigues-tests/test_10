@@ -41,6 +41,18 @@ class TestPut:
         assert data == {'detail': 'Authorization not sent or invalid.'}
         assert response.status_code == 401
 
+    def test_when_id_does_not_exist_for_recipe_then_returns_not_found_response(self, server_host):
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.put(server_host + '/recipes/51241515/', headers=headers)
+
+        try:
+            assert response.json() == {'detail': 'Not found.'}
+            assert response.status_code == 404
+        finally:
+            User.query.filter(id=user_id).delete()
+
     def test_when_authorized_and_data_is_valid_then_updates_and_returns_data(self, server_host):
         recipe_data = {
             'name': 'A recipe name',
@@ -79,6 +91,18 @@ class TestPatch:
         assert data == {'detail': 'Authorization not sent or invalid.'}
         assert response.status_code == 401
 
+    def test_when_id_does_not_exist_for_recipe_then_returns_not_found_response(self, server_host):
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.patch(server_host + '/recipes/51241515/', headers=headers)
+
+        try:
+            assert response.json() == {'detail': 'Not found.'}
+            assert response.status_code == 404
+        finally:
+            User.query.filter(id=user_id).delete()
+
     def test_when_authorized_and_data_is_valid_then_updates_and_returns_data(self, server_host):
         recipe_data = {
             'name': 'A recipe name',
@@ -114,6 +138,18 @@ class TestDelete:
 
         assert data == {'detail': 'Authorization not sent or invalid.'}
         assert response.status_code == 401
+
+    def test_when_id_does_not_exist_for_recipe_then_returns_not_found_response(self, server_host):
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.delete(server_host + '/recipes/51241515/', headers=headers)
+
+        try:
+            assert response.json() == {'detail': 'Not found.'}
+            assert response.status_code == 404
+        finally:
+            User.query.filter(id=user_id).delete()
 
     def test_when_authorized_and_data_is_valid_then_updates_and_returns_data(self, server_host):
         recipe = Recipe.query.create(name='A recipe name', difficulty=3, vegetarian=False, preparation_time=15)

@@ -19,3 +19,9 @@ class TestPost:
         finally:
             Rating.query.filter(id=data['id']).delete()
             Recipe.query.filter(id=recipe.id).delete()
+
+    def test_when_id_does_not_exist_for_recipe_then_returns_not_found_response(self, server_host):
+        response = requests.post(server_host + '/recipes/51241515/rating/', json={})
+
+        assert response.json() == {'detail': 'Not found.'}
+        assert response.status_code == 404
