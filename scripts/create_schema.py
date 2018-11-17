@@ -12,7 +12,8 @@ from db.helpers import get_autocommit_connection, call_close, raise_if_database_
 
 
 def create_database_if_not_exists():
-    db_data = {**DB_DATA, 'dbname': 'postgres'}
+    db_data = DB_DATA.copy()
+    db_data['dbname'] = 'postgres'
     connection = get_autocommit_connection(**db_data)
     cursor = connection.cursor()
     try:
