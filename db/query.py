@@ -52,8 +52,11 @@ class Query(DBConn):
                 fields.append('LOWER({}) like %s'.format(field.replace('__endswith', '')))
                 values.append('%{}'.format(value.lower()))
             elif '__in' in field:
-                fields.append('{} in %s'.format(field.replace('__in', '')))
-                values.append('({})'.format(', '.join(value)))
+                fields.append('{} in ({})'.format(
+                    field.replace('__in', ''),
+                    ', '.join(['%s' for _ in value])
+                ))
+                values.extend(value)
             else:
                 fields.append('{} = %s'.format(field))
                 values.append(value)
