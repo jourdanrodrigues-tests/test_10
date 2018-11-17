@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 
 import psycopg2
@@ -9,16 +8,7 @@ sys.path.extend([BASE_DIR])
 
 from app.models import Recipe, Rating, User
 from core.environment import DB_DATA
-from db.helpers import get_autocommit_connection, call_close
-
-
-def handle_db_creation_error(exception):
-    message = str(exception)
-    database_exists = re.search(r'already exists', message, re.IGNORECASE)
-    if database_exists:
-        print(message.capitalize())
-    else:
-        raise exception
+from db.helpers import get_autocommit_connection, call_close, handle_db_creation_error
 
 
 def create_database_if_not_exists():
