@@ -2,7 +2,6 @@ import re
 
 import psycopg2
 
-
 __all__ = [
     'call_close',
     'raise_if_database_does_not_exist',

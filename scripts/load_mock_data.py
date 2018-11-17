@@ -11,7 +11,8 @@ MOCK_DATA_DIR = os.path.join(os.path.dirname(__file__), 'mock_data')
 
 
 def load(model):
-    with open(os.path.join(MOCK_DATA_DIR, '{}.json'.format(model.__name__.lower()))) as content:
+    file_name = '{}.json'.format(model.__name__.lower())
+    with open(os.path.join(MOCK_DATA_DIR, file_name)) as content:
         data_list = json.load(content)
 
     for data in data_list:
