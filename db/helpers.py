@@ -5,17 +5,15 @@ import psycopg2
 
 __all__ = [
     'call_close',
-    'handle_db_creation_error',
+    'raise_if_database_does_not_exist',
     'get_autocommit_connection',
 ]
 
 
-def handle_db_creation_error(exception):
+def raise_if_database_does_not_exist(exception: Exception) -> None:
     message = str(exception)
     database_exists = re.search(r'already exists', message, re.IGNORECASE)
-    if database_exists:
-        print(message.capitalize())
-    else:
+    if not database_exists:
         raise exception
 
 

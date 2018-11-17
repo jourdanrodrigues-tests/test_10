@@ -8,7 +8,7 @@ sys.path.extend([BASE_DIR])
 
 from app.models import Recipe, Rating, User
 from core.environment import DB_DATA
-from db.helpers import get_autocommit_connection, call_close, handle_db_creation_error
+from db.helpers import get_autocommit_connection, call_close, raise_if_database_does_not_exist
 
 
 def create_database_if_not_exists():
@@ -18,7 +18,7 @@ def create_database_if_not_exists():
     try:
         cursor.execute('CREATE DATABASE {};'.format(DB_DATA['dbname']))
     except psycopg2.ProgrammingError as exc:
-        handle_db_creation_error(exc)
+        raise_if_database_does_not_exist(exc)
     finally:
         call_close(cursor, connection)
 
