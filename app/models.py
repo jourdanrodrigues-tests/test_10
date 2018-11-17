@@ -10,7 +10,7 @@ class RecipeQuery(Query):
 
         if data.get('difficulty') not in difficulty_choices:
             first, last = difficulty_choices[0], difficulty_choices[-1]
-            raise BadRequestError('Recipe difficulty should be between {} and {}'.format(first, last))
+            raise BadRequestError('Recipe difficulty should be between {} and {}.'.format(first, last))
 
         return super().create(**data)
 
@@ -37,7 +37,7 @@ class RatingQuery(Query):
 
         if data.get('value') not in rating_choices:
             first, last = rating_choices[0], rating_choices[-1]
-            raise BadRequestError('Rating value should be between {} and {}'.format(first, last))
+            raise BadRequestError('Rating value should be between {} and {}.'.format(first, last))
 
         return super().create(**data)
 
