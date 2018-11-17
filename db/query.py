@@ -87,6 +87,22 @@ class Query(DBConn):
         )
         self._run_query(query_string)
 
+    def exists(self) -> bool:
+        query_string = 'select 1 from "{}"'.format(
+            self.model.get_table_name(),
+        )
+        values = None
+
+        if self._where:
+            where, values = self._get_where_statement_and_values()
+            query_string += where
+
+        query_string += ' limit 1'
+
+        self._run_query('select exists({})'.format(query_string), values)
+        exists = self._cursor.fetchone()[0]
+        return exists
+
     def filter(self, **kwargs):
         self._where = {**self._where, **kwargs}
         return self
