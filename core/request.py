@@ -67,7 +67,7 @@ class RequestHandler(MethodsMixin, BaseHTTPRequestHandler):
     def _get_payload(self) -> dict:
         payload_length = int(self.headers.get('Content-Length'))
         payload = self.rfile.read(payload_length)
-        return json.loads(payload)
+        return json.loads(payload) if payload else {}
 
     def send_response(self, code: int, message: str = None) -> None:
         super().send_response(code, message)
