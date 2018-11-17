@@ -68,3 +68,41 @@ class TestPost:
         finally:
             User.query.filter(id=user_id).delete()
             Recipe.query.filter(id=data['id']).delete()
+
+
+class TestPut:
+    def test_when_no_authorization_header_is_sent_then_returns_unauthorized_response(self, server_host):
+        recipe_data = {}  # It won't get to the view anyway
+
+        response = requests.put(server_host + '/recipes/1/', json=recipe_data)
+        data = response.json()
+
+        assert data == {'detail': 'Authorization not sent or invalid.'}
+        assert response.status_code == 401
+
+    def test_when_authorized_and_data_is_valid_then_returns_data(self, server_host):
+        recipe_data = {
+            'name': 'A recipe name',
+            'difficulty': 3,
+            'vegetarian': False,
+            'preparation_time': 15,
+        }
+        recipe_id = Recipe.query.create(**recipe_data).id
+
+        recipe_data['name'] = 'One fine recipe'
+        recipe_data['vegetarian'] = True
+
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.put(server_host + '/recipes/{}/'.format(recipe_id), json=recipe_data, headers=headers)
+        data = response.json()
+        expected_data = {'id': recipe_id, **recipe_data}
+
+        try:
+            assert expected_data == data
+            assert Recipe.query.filter(**expected_data).exists()
+            assert response.status_code == 200
+        finally:
+            User.query.filter(id=user_id).delete()
+            Recipe.query.filter(id=data['id']).delete()
