@@ -56,10 +56,12 @@ docker-compose run server python scripts/load_mock_data.py
 
 ### Useful cURL commands for API testing
 
+Note: These cURL commands work after loading the mock data
+
 ```bash
 curl -X GET http://localhost:8080/recipes/ # Retrieve recipe list
 
-curl -X GET http://localhost:8080/recipes/3/ # Retrieve a recipe for the specified ID
+curl -X GET http://localhost:8080/recipes/1/ # Retrieve a recipe for the specified ID
 
 curl -X POST \
   http://localhost:8080/recipes/ \
@@ -68,20 +70,20 @@ curl -X POST \
   -d '{"name": "A cool recipe", "difficulty": 1, "vegetarian": false, "preparation_time": 15}' # Create a recipe
 
 curl -X PUT \
-  http://localhost:8080/recipes/3/ \
-  -H 'Authorization: 2' \
+  http://localhost:8080/recipes/1/ \
+  -H 'Authorization: 1' \
   -H 'Content-Type: application/json' \
-  -d '{"name": "One fine recipe", "difficulty": 2, "vegetarian": true, "preparation_time": 13}' # Update a recipe with PUT
+  -d '{"name": "One fine recipe", "difficulty": 2, "vegetarian": true, "preparation_time": 14}' # Update a recipe with PUT
 
 curl -X PATCH \
-  http://localhost:8080/recipes/3/ \
-  -H 'Authorization: 2' \
+  http://localhost:8080/recipes/1/ \
+  -H 'Authorization: 1' \
   -H 'Content-Type: application/json' \
-  -d '{"name": "One fine recipe", "difficulty": 2, "vegetarian": true, "preparation_time": 13}' # Update a recipe with PATCH
+  -d '{"name": "One fine recipe", "difficulty": 2, "vegetarian": false, "preparation_time": 13}' # Update a recipe with PATCH
 
-curl -X DELETE http://localhost:8080/recipes/3/ -H 'Authorization: 1' # Delete a recipe
+curl -X DELETE http://localhost:8080/recipes/1/ -H 'Authorization: 1' # Delete a recipe
 
-curl -X POST http://localhost:8080/recipes/4/rating/ -H 'Content-Type: application/json' -d '{"value": 2}' # Create a rating for a recipe
+curl -X POST http://localhost:8080/recipes/1/rating/ -H 'Content-Type: application/json' -d '{"value": 2}' # Create a rating for a recipe
 ```
 
 [pep8-link]: https://www.python.org/dev/peps/pep-0008/
