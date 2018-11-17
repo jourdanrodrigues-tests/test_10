@@ -67,3 +67,43 @@ class TestPost:
         finally:
             User.query.filter(id=user_id).delete()
             Recipe.query.filter(id=data['id']).delete()
+
+    def test_when_authorized_and_data_difficulty_is_above_3_then_returns_bad_request_response(self, server_host):
+        recipe_data = {
+            'name': 'A recipe name',
+            'difficulty': 4,
+            'vegetarian': False,
+            'preparation_time': 15,
+        }
+
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.post(server_host + '/recipes/', json=recipe_data, headers=headers)
+        data = response.json()
+
+        try:
+            assert data == {'detail': 'Recipe difficulty should be between 1 and 3.'}
+            assert response.status_code == 400
+        finally:
+            User.query.filter(id=user_id).delete()
+
+    def test_when_authorized_and_data_difficulty_is_below_1_then_returns_bad_request_response(self, server_host):
+        recipe_data = {
+            'name': 'A recipe name',
+            'difficulty': 0,
+            'vegetarian': False,
+            'preparation_time': 15,
+        }
+
+        user_id = User.query.create().id
+        headers = {'Authorization': str(user_id)}
+
+        response = requests.post(server_host + '/recipes/', json=recipe_data, headers=headers)
+        data = response.json()
+
+        try:
+            assert data == {'detail': 'Recipe difficulty should be between 1 and 3.'}
+            assert response.status_code == 400
+        finally:
+            User.query.filter(id=user_id).delete()
