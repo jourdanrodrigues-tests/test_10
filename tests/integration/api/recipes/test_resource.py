@@ -11,18 +11,17 @@ class TestGet:
             'vegetarian': False,
             'preparation_time': 15,
         }
-        Recipe.query.create(**recipe_data)
+        recipe_id = Recipe.query.create(**recipe_data).id
 
         response = requests.get(server_host + '/recipes/')
 
         data = response.json()
-        created_id = data[0]['id']
-        expected_data = [{'id': created_id, **recipe_data}]
+        expected_data = [{'id': recipe_id, **recipe_data}]
 
         try:
             assert expected_data == data
         finally:
-            Recipe.query.filter(id=created_id).delete()
+            Recipe.query.filter(id=recipe_id).delete()
 
     def test_when_filtered_by_name_then_returns_recipes_that_match(self, server_host):
         id1 = Recipe.query.create(name='A random name', difficulty=2, vegetarian=True, preparation_time=15).id
