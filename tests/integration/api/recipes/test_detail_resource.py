@@ -3,6 +3,34 @@ import requests
 from app.models import Recipe, User
 
 
+class TestGet:
+    def test_when_id_exists_for_recipe_then_returns_data(self, server_host):
+        recipe_data = {
+            'name': 'A recipe name',
+            'difficulty': 3,
+            'vegetarian': False,
+            'preparation_time': 15,
+        }
+        recipe_id = Recipe.query.create(**recipe_data).id
+
+        response = requests.get(server_host + '/recipes/{}/'.format(recipe_id))
+
+        data = response.json()
+        expected_data = {'id': recipe_id, **recipe_data}
+
+        try:
+            assert expected_data == data
+            assert response.status_code == 200
+        finally:
+            Recipe.query.filter(id=recipe_id).delete()
+
+    def test_when_id_does_not_exist_for_recipe_then_returns_not_found_response(self, server_host):
+        response = requests.get(server_host + '/recipes/51241515/')
+
+        assert response.json() == {'detail': 'Not found.'}
+        assert response.status_code == 404
+
+
 class TestPut:
     def test_when_no_authorization_header_is_sent_then_returns_unauthorized_response(self, server_host):
         recipe_data = {}  # It won't get to the view anyway
