@@ -9,8 +9,6 @@ services:
       POSTGRES_DB: hellofresh
       POSTGRES_USER: hellofresh
       POSTGRES_PASSWORD: hellofresh
-    ports:
-      - "5432:5432" # For development purposes
 
   server:
     build: .
