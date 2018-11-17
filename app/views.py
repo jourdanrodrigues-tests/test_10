@@ -35,7 +35,7 @@ def get_recipe(request, **kwargs) -> Union[dict, tuple]:
 
 @authentication_required
 def update_recipe(request, **kwargs) -> dict:
-    recipe_id = kwargs['id']
+    recipe_id = int(kwargs['id'])
     Recipe.query.filter(id=recipe_id).update(**request.data)
     return {'id': recipe_id, **request.data}
 
