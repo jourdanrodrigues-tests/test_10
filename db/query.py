@@ -43,14 +43,14 @@ class Query(DBConn):
         values = []
         for field, value in self._where.items():
             if '__contains' in field:
-                fields.append('{} like %s'.format(field.replace('__contains', '')))
-                values.append('%{}%'.format(value))
+                fields.append('LOWER({}) like %s'.format(field.replace('__contains', '')))
+                values.append('%{}%'.format(value.lower()))
             elif '__startswith' in field:
-                fields.append('{} like %s'.format(field.replace('__startswith', '')))
-                values.append('{}%'.format(value))
+                fields.append('LOWER({}) like %s'.format(field.replace('__startswith', '')))
+                values.append('{}%'.format(value.lower()))
             elif '__endswith' in field:
-                fields.append('{} like %s'.format(field.replace('__endswith', '')))
-                values.append('%{}'.format(value))
+                fields.append('LOWER({}) like %s'.format(field.replace('__endswith', '')))
+                values.append('%{}'.format(value.lower()))
             elif '__in' in field:
                 fields.append('{} in %s'.format(field.replace('__in', '')))
                 values.append('({})'.format(', '.join(value)))
