@@ -39,19 +39,19 @@ docker-compose up -d
 ### Running the tests
 
 ```bash
-docker-compose run server pytest
+docker-compose run --rm server pytest
 ```
 
 ### Creating database schema
 
 ```bash
-docker-compose run server python scripts/create_schema.py
+docker-compose run --rm server python scripts/create_schema.py
 ```
 
 ### Loading mock data
 
 ```bash
-docker-compose run server python scripts/load_mock_data.py
+docker-compose run --rm server python scripts/load_mock_data.py
 ```
 
 ### Useful cURL commands for API testing
